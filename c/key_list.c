@@ -14,7 +14,7 @@
 
 key_list_t *key_list_create(value_releaser releaser) 
 {
-    key_list_t * list = (key_list_t * )malloc(sizeof(key_list_t));
+    key_list_t * list = (key_list_t * )port_malloc(sizeof(key_list_t));
     list->count = 0;
     list->header = NULL;
     list->releaser = releaser;
@@ -27,10 +27,10 @@ int key_list_destroy(key_list_t *list)
     while (current != NULL) {
         key_list_node_t *next = current->next;
         list->releaser(current->value);  
-        free(current);        
+        port_free(current);        
         current = next;
     }
-    free(list);
+    port_free(list);
     return 0;
 }
 
@@ -83,7 +83,7 @@ static int key_list_remove_node(key_list_t *list, key_list_node_t *node)
 
     list->releaser(node->value); 
 
-    free(node);
+    port_free(node);
     list->count--;
 
     return 0;
@@ -100,10 +100,11 @@ int key_list_add(key_list_t *list, key_t key, value_t value)
         return -1;
     }
 
-    key_list_node_t* node = calloc(1, sizeof(key_list_node_t));
+    key_list_node_t* node = port_malloc( sizeof(key_list_node_t));
     if (node == NULL) {
         return -1;
     }
+	memset(node,0, sizeof(key_list_node_t));
 
     node->key = key;
     node->value = value;

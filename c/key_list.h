@@ -14,12 +14,20 @@
 #define _KEY_LIST_H_
 
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
+#include "FreeRTOS.h"
+
+#define port_malloc( len )  pvPortMalloc(len)
+#define port_free( ptr )    vPortFree( ptr )
+
 
 typedef struct _value {
     void *value;
 } value_t;
 
-typedef int key_t;
+typedef uint8_t key_t;
 typedef void (*value_releaser)(value_t value);
 
 #define key_compare(a, b) ((a==b)?1:0)
@@ -32,7 +40,7 @@ typedef struct key_list_node {
 } key_list_node_t;
 
 typedef struct key_list {
-    int count;
+    uint8_t count;
     key_list_node_t *header;      
     value_releaser releaser;
 } key_list_t;

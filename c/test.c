@@ -25,10 +25,19 @@
 #define TEST_TYPE_8 0x08
 #define TEST_TYPE_9 0x09
 
-#define LOG(format,...) printf(format, ##__VA_ARGS__)
+int32_t dma_printf(const char *fmt, ...);
 
-int main(int argc, char const *argv[])
+#define LOG(format,...) dma_printf(format, ##__VA_ARGS__)
+
+int main_tlv_test(void)
 {
+	char t1 ='x';
+	short t2=2;
+	int t3=3;
+	long t4=4;
+	float t5=5.67;
+	double t6=(double)8.91;
+	char *t7="hello world !";
     tlv_box_t *box = tlv_box_create();    
     tlv_box_put_char(box, TEST_TYPE_1, 'x');
     tlv_box_put_short(box, TEST_TYPE_2, (short)2);
@@ -75,7 +84,8 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_char failed !\n");  
             return -1;
         }
-        LOG("tlv_box_get_char success %c \n", value);
+		if( t1 == value)
+       	 	LOG("tlv_box_get_char success %c \n", value);
     }
 
     {
@@ -84,6 +94,7 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_short failed !\n");             
             return -1;
         }
+		if( t2 == value)
         LOG("tlv_box_get_short success %d \n", value);
     }
 
@@ -93,6 +104,7 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_int failed !\n");            
             return -1;
         }
+		if( t3 == value)
         LOG("tlv_box_get_int success %d \n", value);
     }
 
@@ -102,6 +114,7 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_long failed !\n");            
             return -1;
         }
+		if( t4 == value)
         LOG("tlv_box_get_long success %ld \n", value);
     }
 
@@ -111,6 +124,7 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_float failed !\n");            
             return -1;
         }
+		if( memcmp(&t5 , &value,sizeof(t5))==0)
         LOG("tlv_box_get_float success %f \n", value);
     }
 
@@ -120,27 +134,30 @@ int main(int argc, char const *argv[])
             LOG("tlv_box_get_double failed !\n");            
             return -1;
         }
+		if( memcmp(&t6 , &value,sizeof(t6))==0)
         LOG("tlv_box_get_double success %f \n", value);
     }
 
     {
-        char value[128]; 
-        int length = 128;
+        char value[20]; 
+        int length = 20;
         if (tlv_box_get_string(parsedBox, TEST_TYPE_7, value, &length) != 0) {
             LOG("tlv_box_get_string failed !\n");            
             return -1;
         }
+		
+		if( memcmp(t7 , &value,strlen(t7))==0)
         LOG("tlv_box_get_string success %s \n", value);
     }
 
     {
-        unsigned char value[128]; 
-        int length = 128;
+        unsigned char value[20]; 
+        int length = 20;
         if (tlv_box_get_bytes(parsedBox,TEST_TYPE_8, value, &length) != 0) {
             LOG("tlv_box_get_bytes failed !\n"); 
             return -1;
         }        
-
+		if( memcmp(array , &value,sizeof(array))==0)
         LOG("tlv_box_get_bytes success:  ");         
         int i = 0;
         for(i=0; i<length; i++) {
